@@ -1,0 +1,31 @@
+#!/bin/bash
+
+##  LaTeX2Ans: convert LaTeX as well as possible to the incompatible Ans-Delft version.
+##  Marc van der Sluys, 2020-05-06
+
+if [ ${#} -eq 0 ]
+then
+    command=`echo ${0} |sed -e 's/^.*\///g'`  # Remove path (e.g. ./)
+    echo "This command converts LaTeX as well as possible to the incompatible Ans-Delft version."
+    echo "Error: at least one argument was expected"
+    echo "Syntax:  ${command} <LaTeX file> [<LaTeX file 2> <...>]"
+    exit 1
+fi
+
+for LFILE in $@
+do
+    AFILE=`echo "$LFILE.ans" | sed 's|\.tex\.ans$|\.ans|'`
+    echo "Converting $LFILE -> $AFILE"
+    
+    sed \
+	-e 's|\$|$$|g' \
+	-e 's|\\begin{equation}|$$$|g' \
+	-e 's|\\end{equation}|$$$|g' \
+	-e 's|\\begin{eqnarray}|$$$|g' \
+	-e 's|\\end{eqnarray}|$$$|g' \
+	-e 's|$| |'\
+	$LFILE > $AFILE
+    
+done
+
+
