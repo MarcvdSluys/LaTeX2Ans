@@ -22,9 +22,24 @@ do
 	-e 's|\$|$$|g' \
 	-e 's|\\begin{equation}|\\begin{eqnarray}|g' \
 	-e 's|\\end{equation}|\\end{eqnarray}|g' \
+	-e 's|\\text..{|{|g' \
+	-e 's|\\emph{|{|g' \
 	-e "s|\`|'|g" \
 	-e 's|$| |'\
 	$LFILE > $AFILE
 done
 
+
+# Needed when not using a hand-written exam:
+
+TFILE=".tempAnsfile.ans"
+
+mv -f $AFILE $TFILE
+sed \
+    -e 's|~| |g' \
+    -e 's|\\,| |g' \
+    -e 's|\.\\ |\. |g' \
+    $TFILE > $AFILE
+
+rm -f $TFILE
 
