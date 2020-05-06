@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ##  LaTeX2Ans: convert LaTeX as well as possible to the incompatible Ans-Delft version.
-##  Marc van der Sluys, 2020-05-06
+##  2020-05-06, Marc van der Sluys, HAN University of Applied Sciences, the Netherlands.
 
 if [ ${#} -eq 0 ]
 then
@@ -18,14 +18,13 @@ do
     echo "Converting $LFILE -> $AFILE"
     
     sed \
+	-e '/^ *%/d' \
 	-e 's|\$|$$|g' \
-	-e 's|\\begin{equation}|$$$|g' \
-	-e 's|\\end{equation}|$$$|g' \
-	-e 's|\\begin{eqnarray}|$$$|g' \
-	-e 's|\\end{eqnarray}|$$$|g' \
+	-e 's|\\begin{equation}|\\begin{eqnarray}|g' \
+	-e 's|\\end{equation}|\\end{eqnarray}|g' \
+	-e "s|\`|'|g" \
 	-e 's|$| |'\
 	$LFILE > $AFILE
-    
 done
 
 
