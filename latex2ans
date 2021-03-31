@@ -17,16 +17,40 @@ do
     AFILE=`echo "$LFILE.ans" | sed 's|\.tex\.ans$|\.ans|'`
     echo "Converting $LFILE -> $AFILE"
     
+    # Remove comment lines and label-only lines, remove remaining labels and \nonumbers, replace single $ with
+    #   double $$ for inline math, remove \text..{}, replace \text{ with \mathrm{, remove \emph{, replace
+    #   \dfrac -> \frac, replace ` -> ', remove eqnarray alignment & in many shapes, add space to EoL(?)
     sed \
 	-e '/^ *%/d' \
+	-e '/^ *\\label{[^}]*} *$/d' \
+	-e 's|\\label{[^}]*}||g' \
+	-e 's|\\nonumber||g' \
 	-e 's|\$|$$|g' \
-	-e 's|\\begin{equation}|\\begin{eqnarray}|g' \
-	-e 's|\\end{equation}|\\end{eqnarray}|g' \
 	-e 's|\\text..{|{|g' \
+	-e 's|\\text{|\\mathrm{|g' \
 	-e 's|\\emph{|{|g' \
+	-e 's|\\dfrac{|\\frac{|g' \
 	-e "s|\`|'|g" \
-	-e 's|$| |'\
+	-e 's| & *= *& | = |g' \
+	-e 's| & *\\approx *& | \\approx |g' \
+	-e 's| & *\\equiv *& | \\equiv |g' \
+	-e 's| & *& | |g' \
+	-e 's|&&| |g' \
+	-e 's|&=&|=|g' \
+	-e 's|$| |' \
 	$LFILE > $AFILE
+    
+    # -e 's|\\begin{equation}|\\begin{eqnarray}|g' \  # Only works for hand-written exams!
+    # -e 's|\\end{equation}|\\end{eqnarray}|g' \      # Only works for hand-written exams!
+    
+    
+    # Multiline (-z) replace \begin/end{equation/eqnarray} with $$$ for display-mode math:
+    sed -i -z \
+	-e 's|\\begin{equation} *\n *|$$$|g' \
+	-e 's|\n *\\end{equation} *\n|$$$\n|g' \
+	-e 's|\\begin{eqnarray} *\n *|$$$|g' \
+	-e 's|\n *\\end{eqnarray} *\n|$$$\n|g' \
+	$AFILE
 done
 
 
